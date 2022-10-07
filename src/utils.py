@@ -18,21 +18,18 @@ def download_video(url:str, filename:str) -> str:
         List of timestamps for every sentence
     """
     
+    cwd = os.getcwd()
+    
     try: 
         yt = pytube.YouTube(url, on_progress_callback=on_progress) 
     except: 
-        print("Connection Error") # To handle exception 
-    video_path = yt.streams.filter(progressive=True, file_extension='mp4')\
-                           .order_by('resolution').desc().first().download()
-    
-    # Rename path
-    new_path = video_path.split('/')
-    new_filename = filename + '.mp4'
-    new_path[-1]= new_filename
-    new_path='/'.join(new_path)
-    os.rename(video_path, new_path)
+        print("Connection Error")
         
-    return new_path
+    video = yt.streams.filter(progressive=True, file_extension='mp4')\
+                      .order_by('resolution').desc().first()\
+                      .download(output_path=f'{cwd}/src/media/', filename=f'{filename}.mp4')
+        
+    return f'{cwd}/src/media/{filename}.mp4'
 
 def get_word_timestamps(response:list) -> list:
     """ 
@@ -49,6 +46,7 @@ def get_word_timestamps(response:list) -> list:
     for res in response:
         for words in res['text'].split():
             word_timestamps.append([res['start'] , res['start'] + res['duration']])
+            
     return word_timestamps
  
 def get_sentence_timestamps(sent_list:list, word_timestamps:list) -> list:
@@ -73,6 +71,7 @@ def get_sentence_timestamps(sent_list:list, word_timestamps:list) -> list:
             end.append(word_timestamps[idx][1])
             idx += 1
         sentence_timestamps.append([start[0], end[-1]])
+        
     return sentence_timestamps
 
 def timestamps_to_summary(original:str, save_as:str, summary:list) -> None:
@@ -92,6 +91,8 @@ def timestamps_to_summary(original:str, save_as:str, summary:list) -> None:
     clip = VideoFileClip(original)
     outputs = [clip.subclip(i[0], i[1]) for i in summary]
     summary = concatenate_videoclips(outputs) 
-    summary.write_videofile(save_as)
+    summary.write_videofile(f'{os.getcwd()}/src/summaries/{save_as}_summary.mp4')
     
     clip.close()
+    
+    return None
