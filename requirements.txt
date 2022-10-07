@@ -1,4 +1,4 @@
-moviepy
-nltk
-pytube
-youtube_transcript_api
+moviepy==1.0.3
+nltk==3.6.5
+pytube==12.1.0
+youtube_transcript_api==0.4.4
