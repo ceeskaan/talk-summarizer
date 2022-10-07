@@ -1,4 +1,5 @@
+bert-extractive-summarizer==0.10.1
 moviepy==1.0.3
-nltk==3.6.5
+nltk==3.6.6
 pytube==12.1.0
 youtube_transcript_api==0.4.4
